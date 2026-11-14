@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from services.common.faults import FaultInjector
 from services.common.observability import instrument_app
 
-app = FastAPI(title="OpsPilot Checkout", version="0.1.0")
+app = FastAPI(title="Rootline Checkout", version="0.1.0")
 faults = FaultInjector()
 logger = instrument_app(app, "checkout")
 

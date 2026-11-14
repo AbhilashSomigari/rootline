@@ -6,7 +6,7 @@ from agent.app.tools.logs import search_logs
 from agent.app.tools.metrics import service_metrics
 from agent.app.tools.traces import recent_traces
 
-mcp = MCPServer("OpsPilot Observability")
+mcp = MCPServer("Rootline Observability")
 
 @mcp.tool()
 async def metrics(service: str) -> dict:

@@ -20,7 +20,7 @@ export default async function Page(){
   const baseline = payload?.baseline;
   const rows = evalRun?.results || [];
   return <main>
-    <h1>OpsPilot</h1>
+    <h1>Rootline</h1>
     <p>Production incident-response agent evaluation dashboard</p>
     {!s ? <div className="card"><b>No evaluation run yet.</b><p>Run <code>python eval/baseline.py</code> and <code>python eval/runner.py</code>.</p></div> : <>
       <div className="grid">
@@ -36,7 +36,7 @@ export default async function Page(){
 
       <section className="section card">
         <div className="label">Agent vs single-prompt baseline</div>
-        <div className="row"><span>OpsPilot</span><div className="bar"><div className="fill" style={{width:pct(s.root_cause_top1_accuracy)}}/></div><b>{pct(s.root_cause_top1_accuracy)}</b></div>
+        <div className="row"><span>Rootline</span><div className="bar"><div className="fill" style={{width:pct(s.root_cause_top1_accuracy)}}/></div><b>{pct(s.root_cause_top1_accuracy)}</b></div>
         <div className="row"><span>Single prompt</span><div className="bar"><div className="fill" style={{width:pct(baseline?.root_cause_top1_accuracy)}}/></div><b>{pct(baseline?.root_cause_top1_accuracy)}</b></div>
       </section>
 

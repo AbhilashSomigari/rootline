@@ -1,6 +1,8 @@
-# OpsPilot — Production AI Incident-Response Agent
+# Rootline — Production AI Incident-Response Agent
 
-OpsPilot is a portfolio-grade AI/SRE system that investigates production incidents by correlating **logs, Prometheus metrics, OpenTelemetry traces, deployment/GitHub history, runbooks, and previous incidents**. It ranks likely root causes, proposes a remediation, requires explicit human approval before consequential actions, and records a complete audit trail.
+*Formerly OpsPilot. Internal identifiers (`OPSPILOT_API_TOKEN`, the `opspilot` Kubernetes namespace and compose project) keep the old name.*
+
+Rootline is a portfolio-grade AI/SRE system that investigates production incidents by correlating **logs, Prometheus metrics, OpenTelemetry traces, deployment/GitHub history, runbooks, and previous incidents**. It ranks likely root causes, proposes a remediation, requires explicit human approval before consequential actions, and records a complete audit trail.
 
 This repository is intentionally more than a chatbot: it contains a fault-injectable distributed application, real observability, retrieval, agent orchestration, evaluation, approval controls, CI, Kubernetes/AWS infrastructure-as-code, and a metrics dashboard.
 
@@ -54,7 +56,7 @@ flowchart LR
 
 Measured on 2026-10-08 over **three full runs** of the 30 hidden-fault incidents, using `gpt-5-mini` through OpenAI (agent code as of `d1b970d`). The baseline is the same model given only the alert text, with no tools or telemetry. Values are the mean across runs, with the min–max range in brackets.
 
-| Metric | OpsPilot (3 runs) | Alert-only baseline (3 runs) |
+| Metric | Rootline (3 runs) | Alert-only baseline (3 runs) |
 |---|---|---|
 | Root-cause Top-1 (failing service + failure category) | **93.3%** [86.7–96.7%] | 30.0% [30.0–30.0%] |
 | Incident-resolution success | 42.2% [33.3–56.7%] | — |
@@ -72,7 +74,7 @@ What the misses are:
 - **Three misses in run 3 were formatting errors.** The diagnosis was right, but the model wrote a sentence such as `"availability: the origin returns errors"` into the `failure_category` field instead of the bare category. Counting those as correct, Top-1 is 96.7% in every run. The headline keeps them as misses, because the agent's output should be valid.
 - **Resolution success varies the most.** With the same evidence, the agent opens a ticket (`github_issue`) instead of proposing a remediation in 12, 19 and 16 of 30 cases across the runs. It's inconsistent about when evidence is strong enough to act.
 
-![OpsPilot evaluation dashboard, run 1](docs/dashboard.png)
+![Rootline evaluation dashboard, run 1](docs/dashboard.png)
 
 Caveats:
 - The environment is a synthetic three-service system with injected faults, and the suite has only one data-contract case.
@@ -81,7 +83,7 @@ Caveats:
 ## Repository layout
 
 ```text
-opspilot/
+rootline/
 ├── agent/
 │   ├── app/
 │   │   ├── graph/          # LangGraph workflow + tool-calling loop
@@ -160,7 +162,7 @@ Local endpoints:
 | Prometheus | http://localhost:9090 |
 | Jaeger | http://localhost:16686 |
 | Grafana | http://localhost:3000 |
-| OpsPilot dashboard | http://localhost:3001 |
+| Rootline dashboard | http://localhost:3001 |
 
 ## 2. Trigger a real incident
 
@@ -183,7 +185,7 @@ done
 wait
 ```
 
-Ask OpsPilot to investigate **without telling it which service failed**:
+Ask Rootline to investigate **without telling it which service failed**:
 
 ```bash
 curl -s -X POST http://localhost:8080/incidents \
@@ -293,7 +295,7 @@ export HUGGING_FACE_HUB_TOKEN=...
 docker compose -f docker-compose.yml -f docker-compose.vllm.yml up --build
 ```
 
-The optional compose layer starts an OpenAI-compatible vLLM server with a tool-calling xLAM model and points OpsPilot at it:
+The optional compose layer starts an OpenAI-compatible vLLM server with a tool-calling xLAM model and points Rootline at it:
 
 ```env
 LLM_PROVIDER=vllm
@@ -366,7 +368,7 @@ The suite includes:
 - mixed latency + availability degradation
 - a catalog data-contract failure that propagates into payment/checkout
 
-Every incident resets the environment, injects exactly the declared fault, generates traffic spread across several Prometheus scrapes, waits for telemetry collection, runs OpsPilot, gathers its audit trail, scores the result, and resets the fault again.
+Every incident resets the environment, injects exactly the declared fault, generates traffic spread across several Prometheus scrapes, waits for telemetry collection, runs Rootline, gathers its audit trail, scores the result, and resets the fault again.
 
 Each investigation passes `window_start` (the moment the fault was injected), and the metrics, logs and traces tools ignore telemetry older than that. Without it, back-to-back cases leak into each other: the previous case's failing service still shows errors in a 5-minute window. Real alerts can pass their own start time; when omitted, the window defaults to the last 5 minutes.
 

@@ -19,7 +19,7 @@ from .rag.hybrid import ingest_paths
 from .tools.base import DEFAULT_WINDOW_S
 from .tools.changes import create_github_issue
 
-app = FastAPI(title="OpsPilot Agent API", version="0.1.0")
+app = FastAPI(title="Rootline Agent API", version="0.1.0")
 
 
 @app.on_event("startup")
@@ -117,7 +117,7 @@ async def approve(incident_id: str, decision: Approval, actor: str = Depends(aut
     try:
         if kind == "github_issue":
             result = await create_github_issue(
-                f"[OpsPilot] {row['title']}",
+                f"[Rootline] {row['title']}",
                 (row.get("result") or {}).get("report", "Incident investigation"),
             )
         else:
